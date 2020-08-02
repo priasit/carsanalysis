@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+    <!--
+    <style> circle {fill: lightblue; stroke: black;} </style>
+    -->
+    <title>Car Mileage Analysis</title>
+    <style> circle </style>
+    <style>
+        
+        ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+        }
+        
+        #tooltip {
+            opacity: 0;
+            position: absolute;
+            text-align: left;
+            width: 100px;
+            height: 70px;
+            background: #ffffff;
+            border: 1px;
+            border-color: #000000;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        .column1 {
+             float: left;
+             width: 30%;
+        }
+        .column2 {
+             float: left;
+             width: 70%;
+        }
+    </style>
+</head>
+<body onload='init()'>
+    <div style="background-color:#000000">
+        <center>
+        <H1 style="color:#FFFFFF">
+            Car mileage analysis to show the mileages of different car brands based on fuel types.
+        </H1>
+        </center>
+        
+    </div>
+     <div class="row">
+         
+      <div class="column1">
+         <H2>Fuel Type Selectors</H2>
+         
+         <button id="all" style="background-color:#42d4f5" onclick="buttonClick(this);">All</button>
+         <button id="gas" onclick="buttonClick(this);">Gasoline</button>
+         <button id="diesel" onclick="buttonClick(this);">Diesel</button>
+         <button id="electric" onclick="buttonClick(this);">Electric</button>
+         
+         <p style="margin-top:75px;">
+            <H2>
+                Car Efficiency
+            </H2>
+            <H3>
+                Car efficiency has been annotated based on the average of <br>city and highway mileages.
+            </H3>
+         </p>
+          
+         <p style="margin-top:75px;">
+            <H2>
+                Note
+            </H2>
+            <H3>
+                
+                    - Mousing over each circle will provide additional details.<br>
+                    - MPG is an acronym for miles per gallon.
+                
+            </H3>
+         </p>
+        
+      </div>
+         
+      <div class="column2">
+        <center>
+        <div id="divchartall">
+            <iframe width="100%" height="800px" id="dispframe" src="all.html" frameBorder="0"></iframe>
+        </div>
+        </center>
+      </div>
+   
+      
+    </div> 
+    
+    <div id="tooltip"></div>
+    
+<script>
+
+
+    function buttonClick(b) {
+        
+        var disp = document.getElementById("divchartall");
+        b.style.backgroundColor = "#42d4f5";
+        
+        if (b.id == "all") {
+            
+            disp.innerHTML = '<iframe height="800px" width="100%" src="all.html" frameBorder="0"></iframe>';
+        }
+        else if (b.id == "gas") {
+            
+            disp.innerHTML = '<iframe height="800px" width="100%" src="gasoline.html" frameBorder="0"></iframe>';
+        }
+        else if (b.id == "diesel") {
+            
+            disp.innerHTML = '<iframe height="800px" width="100%" src="diesel.html" frameBorder="0"></iframe>';;
+        }
+        else {
+            
+            disp.innerHTML = '<iframe height="800px" width="100%" src="electric.html" frameBorder="0"></iframe>';;
+        }
+        
+        dehighlight(b);
+    }  
+    
+    function dehighlight(b) {
+        
+        var butns = ["all","diesel","electric","gas"];
+        
+        for (i=0; i < butns.length; i++) {
+            //alert("checking: " + b.id + " " + butns[i]);
+            if (b.id != butns[i]){
+                var butn = document.getElementById(butns[i]);
+                butn.style.backgroundColor = "#FFFFFF";
+            }
+                
+        }
+    }
+    
+</script>
+</body>
+</html>

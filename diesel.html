@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+    <!--
+    <style> circle {fill: lightblue; stroke: black;} </style>
+    -->
+    <title>Car Mileage Analysis</title>
+    <style> circle </style>
+    <style>
+        
+        ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+        }
+        
+        #tooltip {
+            opacity: 0;
+            position: absolute;
+            text-align: left;
+            width: 100px;
+            height: 70px;
+            background: #ffffff;
+            border: 1px;
+            border-color: #000000;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        
+    </style>
+</head>
+<body onload='init()'>
+    <div>
+        
+        <H2>
+            Diesel Cars
+        </H2>
+        
+    </div>
+     <div class="row">
+      <div class="column" column-width="70%">
+        <div id="chartone">
+        
+        <div id="divchartall">
+            <svg id="chartall" width="100%" height="100%">
+            </svg>
+        </div>
+        
+        </div>
+      </div>
+      
+    </div> 
+    
+    <div id="tooltip"></div>
+    
+<script>
+
+async function init() {   
+  var margin = 50;
+  var width = 600;
+  var height = 600;
+  var x = d3.scaleLog().domain([10, 150]).range([0, width]).base(10);
+  var y = d3.scaleLog().domain([10, 150]).range([height,0]).base(10);
+    
+ 
+  const data = await d3.csv('https://flunky.github.io/cars2017.csv');
+ 
+
+  d3.select('body')
+    
+  var tooltip = d3.select("#tooltip")
+    .style("opacity", 0)
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px");
+    
+  d3.select("svg")
+  .attr("width", width + 2*margin)
+  .attr("height", height + 2*margin)
+  .append("g")
+    .attr("transform","translate("+margin+","+margin+")")
+  .selectAll("circle")
+	  .data(data)
+  .enter().append("circle")
+  .filter(function(d) { return d.Fuel === "Diesel" })
+  .on("mouseover",function(d,i){
+       
+      tooltip
+      .style("opacity", 1)
+  } )
+  .attr("cursor", "pointer")
+  .attr("cx",function(d,i) { return x(+d.AverageCityMPG);})
+  .attr("cy",function(d,i) { return y(+d.AverageHighwayMPG);})
+  .attr("r", function(d,i) { return 4 + (+d.EngineCylinders);})
+    .style("fill", function(d, i) {
+      
+      if ( d.EngineCylinders == 2)
+        return "red";
+      else if ( d.EngineCylinders == 4)
+        return "brown";
+      else if ( d.EngineCylinders == 6)
+         return "green";
+      else if ( d.EngineCylinders == 8)
+          return "blue";
+      else if ( d.EngineCylinders == 10)
+          return "orange";
+      else if ( d.EngineCylinders == 0)
+          return "black";
+      else if ( d.EngineCylinders == 3)
+          return "pink";
+      else 
+          return "grey";
+    })
+    .on("mouseover", function(d,i){
+       
+      var cylinders = d.EngineCylinders;
+      var cartype = d.Make;
+      var fueltype = d.Fuel;
+      var avCityMPG = d.AverageCityMPG;
+      var avHwyMPG = d.AverageHighwayMPG;
+      
+      tooltip.style("opacity", 1)
+      .style("left", (d3.event.pageX)+"px")
+      .style("top", (d3.event.pageY)+"px")
+      .html("Car:" + cartype + "<br>Cyl:" + cylinders + "<br>Fuel:" + fueltype + "<br>AvgCityMPG:" + avCityMPG +  "<br>AvgHwyMPG:" + avHwyMPG );
+    })
+    .on("mouseout", function(d,i) {
+       
+      tooltip
+      .transition()
+      .duration(400)
+      .style("opacity", 0)
+    });
+  
+  
+  d3.select("svg").append("g")
+  .attr("transform","translate("+margin+","+margin+")")
+  .call(d3.axisLeft(y).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+  
+  d3.select("svg").append("g")
+ .attr("transform","translate("+margin+","+(height+margin)+")")
+ .call(d3.axisBottom(x).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
+    
+ // Add X axis label:
+d3.select("svg").append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", width)
+    .attr("y", height + 2* margin - 10)
+    .attr("font-weight",700)
+    .text("Avg. City MPG");
+    
+d3.select("svg").append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", margin - 40)
+    .attr("x", margin - 125)
+    .attr("font-weight",700)
+    .text("Avg. Hwy. MPG")
+}
+
+
+// Previously has #chartall
+var chartall = d3.select("svg");
+var chartallkeys = ["0 Cylinders", "2 Cylinders", "3 Cylinders", "4 Cylinders", "6 Cylinders", "8 Cylinders", "10 Cylinders", "12 Cylinders"];
+chartallcirclex = 630;
+chartallcircletext = 640;
+chartallcircley = 375;
+var offsety = 30;
+    
+for (i = 0; i < chartallkeys.length; i++) {
+    var color ="";
+    
+    
+    if ( chartallkeys[i] == "2 Cylinders" )
+        color = "red";
+      else if ( chartallkeys[i] == "4 Cylinders")
+        color = "brown";
+      else if ( chartallkeys[i] == "6 Cylinders")
+         color = "green";
+      else if ( chartallkeys[i] == "8 Cylinders")
+          color = "blue";
+      else if (chartallkeys[i] == "10 Cylinders")
+          color = "orange";
+      else if ( chartallkeys[i] == "0 Cylinders")
+          color = "black";
+      else if ( chartallkeys[i] == "3 Cylinders")
+          color = "pink";
+      else 
+          color = "grey";
+    
+    chartall.append("circle").attr("cx",chartallcirclex).attr("cy",chartallcircley + offsety).attr("r", 6).style("fill", color);
+    chartall.append("text").attr("x", chartallcircletext).attr("y", chartallcircley + offsety).text(chartallkeys[i]).style("font-size", "11.5px").attr("alignment-baseline","middle");
+    offsety += 30;
+}
+    
+chartall.append("text").attr("x",175).attr("y",70).attr("font-size", "20px").text("This is the most efficient diesel car");
+chartall.append('line')
+    .style("stroke", "blue")
+    .style("stroke-width", 2)
+    .style("stroke-dasharray","5,5")
+    .attr("x1", 320)
+    .attr("y1", 80)
+    .attr("x2", 295)
+    .attr("y2", 330);
+    
+//chartall.append("circle").attr("cx",200).attr("cy",130).attr("r", 6).style("fill", "#69b3a2")
+//chartall.append("circle").attr("cx",200).attr("cy",160).attr("r", 6).style("fill", "#404080")
+//chartall.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
+//chartallvg.append("text").attr("x", 220).attr("y", 160).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
+    
+    function buttonClick(b) {
+        
+        if (b.id == "all") {
+            chartall.selectAll('*').remove();
+            location.href = "index.html";
+        }
+        else if (b.id == "gas") {
+            chartall.selectAll('*').remove();
+            location.href = "gasoline.html";
+        }
+        else if (b.id == "diesel") {
+            chartall.selectAll('*').remove();
+            location.href = "diesel.html";
+        }
+        else {
+            chartall.selectAll('*').remove();
+            location.href = "electric.html";
+        }
+        
+    }
+    
+    
+</script>
+</body>
+</html>
